@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <!-- Vista formulario del padre -->
+  <record id="view_custodia_service_form" model="ir.ui.view">
+    <field name="name">custodia.service.form</field>
+    <field name="model">custodia.service</field>
+    <field name="arch" type="xml">
+      <form string="Servicio de Custodia">
+        <header>
+          <button name="action_aprobar" type="object" string="Aprobar" class="btn-primary"
+                  invisible="state != 'solicitado'"/>
+          <button name="action_asignar" type="object" string="Asignar" class="btn-secondary"
+                  invisible="state != 'aprobado'"/>
+          <button name="action_ejecutar" type="object" string="Ejecutar" class="btn-secondary"
+                  invisible="state != 'asignado'"/>
+          <button name="action_finalizar" type="object" string="Finalizar" class="btn-success"
+                  invisible="state != 'en_ejecucion'"/>
+          <button name="action_cancelar" type="object" string="Cancelar" class="btn-danger"
+                  invisible="state == 'finalizado'"/>
+          <field name="state" widget="statusbar"
+                 statusbar_visible="solicitado,aprobado,asignado,en_ejecucion,finalizado,cancelado"/>
+        </header>
+
+        <sheet>
+          <group>
+            <field name="sequence"/>
+            <field name="partner_id"/>
+            <field name="contact_id"/>
+            <field name="carrier_id"/>
+            <field name="ruta_id"/>
+            <field name="ruta_tipo"/>
+            <field name="nivel_seguridad"/>
+            <field name="start_datetime"/>
+            <field name="load_id"/>
+          </group>
+
+          <notebook>
+            <page string="Asignaciones">
+              <field name="asignacion_ids" mode="list,form"/>
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <!-- Acción y menú para servicios -->
+  <record id="action_custodia_service" model="ir.actions.act_window">
+    <field name="name">Servicios de Custodia</field>
+    <field name="res_model">custodia.service</field>
+    <field name="view_mode">list,form</field>
+  </record>
+
+  <menuitem id="menu_custodia_root" name="Custodia de Valores"/>
+  <menuitem id="menu_custodia_service" name="Servicios" parent="menu_custodia_root" action="action_custodia_service"/>
+</odoo>

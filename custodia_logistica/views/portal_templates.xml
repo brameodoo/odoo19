@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="portal_service_list" name="Mis Servicios">
+        <t t-call="portal.portal_layout">
+            <div class="container my-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>Mis Servicios de Custodia</h2>
+                    <a href="/solicitar-servicio" class="btn btn-primary">
+                        Solicitar Servicio
+                    </a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Folio</th>
+                                <th>Ruta</th>
+                                <th>Inicio</th>
+                                <th>Nivel</th>
+                                <th>Estado</th>
+                                <th class="text-end"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-if="services">
+                                <t t-foreach="services" t-as="s">
+                                    <tr>
+                                        <td><t t-esc="s.sequence"/></td>
+                                        <td><t t-esc="s.ruta_id.name"/></td>
+                                        <td><t t-esc="s.start_datetime"/></td>
+                                        <td><t t-esc="s.nivel_seguridad"/></td>
+                                        <td>
+                                            <span t-field="s.state" class="badge rounded-pill bg-info"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <a t-att-href="'/mis-servicios/%s?access_token=%s' % (s.id, s.access_token)" class="btn btn-sm btn-secondary">
+                                                Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        No existen servicios registrados.
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_service_form" name="Solicitud de Servicio">
+        <t t-call="portal.portal_layout">
+            <div id="wrap" class="container my-4 bg-white p-4 shadow-sm">
+                <h2>Solicitar Servicio de Custodia</h2>
+                <t t-if="error">
+                    <div class="alert alert-danger" role="alert">
+                        <t t-esc="error"/>
+                    </div>
+                </t>
+                <form action="/solicitar-servicio/submit" method="post" class="row g-3 mt-3">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    
+                    <div class="col-md-12">
+                        <label class="form-label">Persona Solicitante</label>
+                        <select name="contact_id" class="form-select" required="1">
+                            <t t-foreach="contacts" t-as="c">
+                                <option t-att-value="c.id"><t t-esc="c.display_name"/></option>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Carrier</label>
+                        <select name="carrier_id" class="form-select" required="1">
+                            <t t-foreach="carriers" t-as="car">
+                                <option t-att-value="car.id"><t t-esc="car.name"/></option>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Ruta</label>
+                        <select name="ruta_id" class="form-select" required="1">
+                            <t t-foreach="rutas" t-as="r">
+                                <option t-att-value="r.id"><t t-esc="r.name"/></option>
+                            </t>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Inicio del servicio</label>
+                        <input type="datetime-local" name="start_datetime" class="form-control" required="1"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nivel de Seguridad</label>
+                        <select name="nivel_seguridad" class="form-select" required="1">
+                            <option value="1">Nivel 1</option>
+                            <option value="2">Nivel 2</option>
+                            <option value="3">Nivel 3</option>
+                            <option value="4">Nivel 4</option>
+                            <option value="4x">Excepción + Nivel 4</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Load ID</label>
+                        <input type="text" name="load_id" class="form-control" required="1"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tipo de Unidad</label>
+                        <input type="text" name="tipo_unidad" class="form-control" required="1"/>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Placas</label>
+                        <input type="text" name="placas" class="form-control" required="1"/>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">Enviar Solicitud</button>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_service_detail" name="Detalle del Servicio">
+        <t t-call="portal.portal_layout">
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+            <div class="container my-4 bg-white pb-5">
+                <div class="d-flex justify-content-between align-items-center pt-3">
+                    <h2>Servicio <t t-esc="service.sequence"/></h2>
+                    <span t-field="service.state" class="badge rounded-pill bg-info" style="font-size: 1rem;"/>
+                </div>
+                <hr/>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <p><b>Cliente:</b> <t t-esc="cliente.display_name"/></p>
+                        <p><b>Ruta:</b> <t t-esc="service.ruta_id.name"/> (<t t-esc="service.ruta_tipo"/>)</p>
+                        <p><b>Inicio:</b> <t t-esc="service.start_datetime"/></p>
+                        <p><b>Nivel:</b> <t t-esc="service.nivel_seguridad"/></p>
+                        <p><b>Load ID:</b> <t t-esc="service.load_id"/></p>
+                    </div>
+                    <div class="col-md-6 border-start">
+                        <h4 class="text-muted">Datos de Logística</h4>
+                        <ul class="list-unstyled">
+                            <li><b>Unidad:</b> <span t-field="service.tipo_unidad"/></li>
+                            <li><b>Placas:</b> <span t-field="service.placas"/></li>
+                            <li><b>Transporte:</b> <span t-field="service.transporte"/></li>
+                            <li><b>Operador:</b> <span t-field="service.operador1_nombre"/></li>
+                            <li><b>Monitoreo:</b> <span t-field="service.tel_monitoreo_1"/></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-5">
+                    <h3>Monitoreo en Vivo</h3>
+                    <div id="live-map" style="height:450px;" class="border shadow-sm"></div>
+                </div>
+
+                <div id="service_communication" class="mt-5 pt-4 border-top">
+                    <h3 class="mb-4">Seguimiento e Incidencias</h3>
+                    <t t-call="portal.message_thread">
+                        <t t-set="object" t-value="service"/>
+                        <t t-set="token" t-value="service.access_token"/>
+                    </t>
+                </div>
+            </div>
+
+            <script type="text/javascript">
+            <![CDATA[
+                document.addEventListener("DOMContentLoaded", function () {
+                    var serviceId = "]]><t t-out='service.id'/><![CDATA[";
+                    var token = "]]><t t-out='token'/><![CDATA[";
+                    
+                    // Inicializar mapa en una posición por defecto (México)
+                    var map = L.map('live-map').setView([19.4326, -99.1332], 6);
+                    
+                    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                        attribution: "OpenStreetMap"
+                    }).addTo(map);
+                    
+                    var marker = L.marker([19.4326, -99.1332]).addTo(map);
+
+                    function updateLocation() {
+                        fetch("/mis-servicios/" + serviceId + "/tracking", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ params: { access_token: token } })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.result && data.result.lat && data.result.lng) {
+                                var newLatLng = [data.result.lat, data.result.lng];
+                                marker.setLatLng(newLatLng);
+                                map.panTo(newLatLng);
+                            }
+                        }).catch(err => console.log("Tracking error:", err));
+                    }
+                    updateLocation();
+                    setInterval(updateLocation, 15000);
+                });
+            ]]>
+            </script>
+        </t>
+    </template>
+
+    <template id="portal_my_home_custodia" inherit_id="portal.portal_my_home" name="Custodia Portal">
+        <xpath expr="//div[contains(@class,'o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Servicios de Custodia</t>
+                <t t-set="url" t-value="'/mis-servicios'"/>
+                <t t-set="placeholder_count" t-value="'services_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+</odoo>
