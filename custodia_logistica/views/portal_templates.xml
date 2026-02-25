@@ -2,14 +2,15 @@
 <odoo>
 
     <!-- ===================================================== -->
-    <!--  CONTADOR EN HOME DEL PORTAL (/my)                  -->
+    <!--  TARJETA EN HOME DEL PORTAL (/my)                   -->
     <!-- ===================================================== -->
 
     <template id="portal_my_home_custodia"
               inherit_id="portal.portal_my_home"
               name="Custodia Portal Home">
 
-        <xpath expr="//div[@id='portal_content']" position="inside">
+        <!-- Insertamos después del bloque de facturas -->
+        <xpath expr="//a[contains(@href, '/my/invoices')]/.." position="after">
 
             <div class="col-12 col-md-6 col-lg-4 mb-4">
                 <a href="/mis-servicios" class="text-decoration-none">
@@ -32,7 +33,7 @@
 
 
     <!-- ===================================================== -->
-    <!--  LISTADO DE SERVICIOS (/mis-servicios)               -->
+    <!--  LISTADO DE SERVICIOS                                -->
     <!-- ===================================================== -->
 
     <template id="portal_my_services"
@@ -84,7 +85,7 @@
 
 
     <!-- ===================================================== -->
-    <!--  DETALLE DEL SERVICIO (/mis-servicios/<id>)          -->
+    <!--  DETALLE DEL SERVICIO                                -->
     <!-- ===================================================== -->
 
     <template id="portal_service_detail"
