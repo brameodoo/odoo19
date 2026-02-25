@@ -1,131 +1,301 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- ===================================================== -->
-    <!--  TARJETA EN HOME DEL PORTAL (/my)                   -->
-    <!-- ===================================================== -->
-
-    <template id="portal_my_home_custodia"
-              inherit_id="portal.portal_my_home"
-              name="Custodia Portal Home">
-
-        <!-- Insertamos después del bloque de facturas -->
-        <xpath expr="//a[contains(@href, '/my/invoices')]/.." position="after">
-
-            <div class="col-12 col-md-6 col-lg-4 mb-4">
-                <a href="/mis-servicios" class="text-decoration-none">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-body text-center">
-                            <img src="/web/static/img/icons/briefcase.svg"
-                                 style="width:48px; margin-bottom:10px;"/>
-                            <h5>Servicios de Custodia</h5>
-                            <p class="text-muted mb-0">
-                                Consulta tus servicios activos
-                            </p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
-        </xpath>
-
-    </template>
-
-
-    <!-- ===================================================== -->
-    <!--  LISTADO DE SERVICIOS                                -->
-    <!-- ===================================================== -->
-
-    <template id="portal_my_services"
-              name="Mis Servicios">
-
+    <template id="portal_service_list" name="Mis Servicios">
         <t t-call="portal.portal_layout">
-            <div class="container mt-4">
-                <h2>Mis Servicios</h2>
+            <div class="container my-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>Mis Servicios de Custodia</h2>
+ <!--                    <a href="/solicitar-servicio" class="btn btn-primary"> -->
+                    <a t-att-href="'/solicitar-servicio'" class="btn btn-primary">
+                        Solicitar Servicio
+                    </a>
+                </div>
 
-                <t t-if="services">
-                    <table class="table table-hover mt-3">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>Servicio</th>
-                                <th>Fecha</th>
+                                <th>Folio</th>
+                                <th>Ruta</th>
+                                <th>Inicio</th>
+                                <th>Nivel</th>
                                 <th>Estado</th>
+                                <th class="text-end"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <t t-foreach="services" t-as="service">
+                            <t t-if="services">
+                                <t t-foreach="services" t-as="s">
+                                    <tr>
+                                        <td><t t-esc="s.sequence"/></td>
+                                        <td><t t-esc="s.ruta_id.name"/></td>
+                                        <td><t t-esc="s.start_datetime"/></td>
+                                        <td><t t-esc="s.nivel_seguridad"/></td>
+                                        <td>
+                                            <span t-field="s.state" class="badge rounded-pill bg-info"/>
+                                        </td>
+                                        <td class="text-end">
+                                            <a t-att-href="'/mis-servicios/%s?access_token=%s' % (s.id, s.access_token)" 
+                                               class="btn btn-sm btn-secondary">
+                                                Ver
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                            <t t-else="">
                                 <tr>
-                                    <td>
-                                        <a t-att-href="'/mis-servicios/%s' % service.id">
-                                            <t t-esc="service.name"/>
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <t t-esc="service.fecha_servicio or ''"/>
-                                    </td>
-                                    <td>
-                                        <t t-esc="service.state"/>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        No existen servicios registrados.
                                     </td>
                                 </tr>
                             </t>
                         </tbody>
                     </table>
-                </t>
-
-                <t t-if="not services">
-                    <div class="alert alert-info mt-3">
-                        No tienes servicios registrados.
-                    </div>
-                </t>
-
+                </div>
             </div>
         </t>
-
     </template>
 
 
-    <!-- ===================================================== -->
-    <!--  DETALLE DEL SERVICIO                                -->
-    <!-- ===================================================== -->
-
-    <template id="portal_service_detail"
-              name="Detalle Servicio Custodia">
-
+    <template id="portal_service_detail" name="Detalle del Servicio">
         <t t-call="portal.portal_layout">
-            <div class="container mt-4">
 
-                <h2>
-                    Servicio:
-                    <t t-esc="service.name"/>
-                </h2>
+            <!-- Leaflet -->
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+            <div class="container my-4 bg-white pb-5">
+
+                <div class="d-flex justify-content-between align-items-center pt-3">
+                    <h2>Servicio <t t-esc="service.sequence"/></h2>
+                    <span t-field="service.state"
+                          class="badge rounded-pill bg-info"
+                          style="font-size: 1rem;"/>
+                </div>
+
+                <hr/>
 
                 <div class="row mt-4">
-
                     <div class="col-md-6">
-                        <h5>Información General</h5>
-
-                        <p><strong>Cliente:</strong>
-                            <t t-esc="service.partner_id.name"/>
-                        </p>
-
-                        <p><strong>Fecha Planeada:</strong>
-                            <t t-esc="service.fecha_servicio"/>
-                        </p>
-
-                        <p><strong>Hora Planeada:</strong>
-                            <t t-esc="service.hora_planeada"/>
-                        </p>
-
-                        <p><strong>Estado:</strong>
-                            <t t-esc="service.state"/>
-                        </p>
+                        <p><b>Cliente:</b> <t t-esc="cliente.display_name"/></p>
+                        <p><b>Ruta:</b> <t t-esc="service.ruta_id.name"/></p>
+                        <p><b>Inicio:</b> <t t-esc="service.start_datetime"/></p>
+                        <p><b>Nivel:</b> <t t-esc="service.nivel_seguridad"/></p>
+                        <p><b>Load ID:</b> <t t-esc="service.load_id"/></p>
                     </div>
 
+                    <div class="col-md-6 border-start">
+                        <h4 class="text-muted">Datos de Logística</h4>
+                        <ul class="list-unstyled">
+                            <li><b>Unidad:</b> <span t-field="service.tipo_unidad"/></li>
+                            <li><b>Placas:</b> <span t-field="service.placas"/></li>
+                            <li><b>Transporte:</b> <span t-field="service.transporte"/></li>
+                            <li><b>Operador:</b> <span t-field="service.operador1_nombre"/></li>
+                            <li><b>Monitoreo:</b> <span t-field="service.tel_monitoreo_1"/></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- MAPA DE RUTA -->
+                <div class="mt-5">
+                    <h3>Ruta Planeada</h3>
+                    <div id="route-map"
+                         t-att-data-ruta-id="service.ruta_id.id"
+                         style="height:450px;"
+                         class="border shadow-sm">
+                    </div>
+                </div>
+
+                <div id="route-summary" class="mt-3 p-3 bg-light border rounded text-center"
+                     style="display:none;">
+                    <strong>Distancia estimada:</strong>
+                    <span id="route-distance"></span>
+                    <span class="mx-3">|</span>
+                    <strong>Tiempo estimado:</strong>
+                    <span id="route-duration"></span>
+                </div>
+
+                <!-- MONITOREO EN VIVO -->
+                <div class="mt-5">
+                    <h3>Monitoreo en Vivo</h3>
+                    <div id="live-map"
+                         style="height:450px;"
+                         class="border shadow-sm">
+                    </div>
                 </div>
 
             </div>
-        </t>
 
+<!-- =========================
+     MENSAJES / CHATTER
+========================== -->
+
+<div id="service_communication" class="mt-5 pt-4 border-top">
+    <h3 class="mb-4">Seguimiento e Incidencias</h3>
+    <t t-call="portal.message_thread">
+        <t t-set="object" t-value="service"/>
+        <t t-set="token" t-value="service.access_token"/>
+    </t>
+</div>
+            
+
+<script type="text/javascript">
+<![CDATA[
+document.addEventListener("DOMContentLoaded", function () {
+
+    // =========================
+    // RUTA CON CARRETERA REAL (OSRM)
+    // =========================
+
+    var routeContainer = document.getElementById("route-map");
+
+    if (routeContainer && routeContainer.dataset.rutaId) {
+
+        var rutaId = routeContainer.dataset.rutaId;
+
+        fetch("/custodia/ruta/" + rutaId + "/coordinates", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ params: {} })
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.result && data.result.length) {
+
+                var points = data.result;
+
+                var firstPoint = points[0];
+
+                var routeMap = L.map("route-map")
+                    .setView([firstPoint.lat, firstPoint.lng], 6);
+
+                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    attribution: "© OpenStreetMap"
+                }).addTo(routeMap);
+
+                // Marcadores
+                points.forEach(function(p) {
+
+                    var color = "blue";
+                    if (p.type === "origin") color = "green";
+                    if (p.type === "destination") color = "red";
+
+                    L.circleMarker([p.lat, p.lng], {
+                        radius: 6,
+                        color: color,
+                        fillColor: color,
+                        fillOpacity: 1
+                    }).addTo(routeMap);
+                });
+
+                // Construir string para OSRM (lng,lat)
+                var coords = points.map(p => p.lng + "," + p.lat).join(";");
+
+                fetch("https://router.project-osrm.org/route/v1/driving/" 
+                      + coords + "?overview=full&geometries=geojson")
+                .then(res => res.json())
+                .then(osrmData => {
+
+                    if (osrmData.routes && osrmData.routes.length) {
+                    
+                        var routeData = osrmData.routes[0];
+                        var routeGeometry = routeData.geometry;
+                    
+                        var geojsonLayer = L.geoJSON(routeGeometry, {
+                            style: {
+                                color: "blue",
+                                weight: 5
+                            }
+                        }).addTo(routeMap);
+
+                        routeMap.fitBounds(geojsonLayer.getBounds());
+                    
+                        // =========================
+                        // MOSTRAR MÉTRICAS
+                        // =========================
+                    
+                        var distanceKm = (routeData.distance / 1000).toFixed(2);
+
+                        var totalMinutes = Math.round(routeData.duration / 60);
+                        var hours = Math.floor(totalMinutes / 60);
+                        var minutes = totalMinutes % 60;
+                        
+                        var formattedDuration = "";
+                        
+                        if (hours > 0) {
+                            formattedDuration += hours + " h ";
+                        }
+                        formattedDuration += minutes + " min";
+                        
+                        document.getElementById("route-distance").innerText = distanceKm + " km";
+                        document.getElementById("route-duration").innerText = formattedDuration;
+
+
+                        document.getElementById("route-summary").style.display = "block";
+                    }
+
+                });
+            }
+        });
+    }
+
+    // =========================
+    // MONITOREO EN VIVO
+    // =========================
+
+    var serviceId = "]]><t t-out='service.id'/><![CDATA[";
+    var token = "]]><t t-out='service.access_token'/><![CDATA[";
+
+    var liveMap = L.map('live-map').setView([19.4326, -99.1332], 6);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap"
+    }).addTo(liveMap);
+
+    var marker = L.marker([19.4326, -99.1332]).addTo(liveMap);
+
+    function updateLocation() {
+        fetch("/mis-servicios/" + serviceId + "/tracking", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ params: { access_token: token } })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.result && data.result.lat && data.result.lng) {
+                var newLatLng = [data.result.lat, data.result.lng];
+                marker.setLatLng(newLatLng);
+                liveMap.panTo(newLatLng);
+            }
+        });
+    }
+
+    updateLocation();
+    setInterval(updateLocation, 15000);
+
+});
+]]>
+</script>
+
+        </t>
     </template>
+
+    <template id="portal_my_home_custodia" 
+          inherit_id="portal.portal_my_home" 
+          name="Custodia Portal">
+
+    <xpath expr="//div[contains(@class,'o_portal_docs')]" position="inside">
+        <t t-call="portal.portal_docs_entry">
+            <t t-set="title">Servicios de Custodia</t>
+            <t t-set="url" t-value="'/mis-servicios'"/>
+            <t t-set="placeholder_count" t-value="'services_count'"/>
+        </t>
+    </xpath>
+
+</template>
+
 
 </odoo>
