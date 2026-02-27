@@ -283,19 +283,16 @@ document.addEventListener("DOMContentLoaded", function () {
         </t>
     </template>
 
-    <template id="portal_my_home_custodia" 
-          inherit_id="portal.portal_my_home" 
-          name="Custodia Portal">
-
-    <xpath expr="//div[contains(@class,'o_portal_docs')]" position="inside">
+<template id="portal_my_home_custodia" inherit_id="portal.portal_my_home" name="Mis Custodias">
+    <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
         <t t-call="portal.portal_docs_entry">
-            <t t-set="title">Servicios de Custodia</t>
+            <t t-set="title">Mis Servicios de Custodia</t>
             <t t-set="url" t-value="'/mis-servicios'"/>
             <t t-set="placeholder_count" t-value="'services_count'"/>
         </t>
     </xpath>
-
 </template>
+    
 
 
 </odoo>
