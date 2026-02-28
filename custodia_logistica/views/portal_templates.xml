@@ -283,24 +283,20 @@ document.addEventListener("DOMContentLoaded", function () {
         </t>
     </template>
 
-<template id="portal_my_home_custodia"
-          inherit_id="portal.portal_my_home"
-          name="Mis Custodias">
+    <template id="portal_my_home_custodia"
+              inherit_id="portal.portal_my_home"
+              name="Custodia Portal">
 
-    <xpath expr="//div[contains(@class, 'o_portal_docs')]" position="inside">
+        <xpath expr="//div[contains(@class,'o_portal_docs')]"
+               position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Servicios de Custodia</t>
+                <t t-set="url" t-value="'/mis-servicios'"/>
+                <t t-set="placeholder_count" t-value="'services_count'"/>
+            </t>
+        </xpath>
 
-        <t t-call="portal.portal_docs_entry">
-            <t t-set="icon" t-value="'/portal/static/src/img/portal-orders.svg'"/>
-            <t t-set="title">Mis Servicios</t>
-            <t t-set="text">Consulta el estado de tus servicios</t>
-            <t t-set="url" t-value="'/mis-servicios'"/>
-            <t t-set="placeholder_count" t-value="'services_count'"/>
-        </t>
-
-    </xpath>
-
-</template>
-    
+    </template>
 
 
 </odoo>
