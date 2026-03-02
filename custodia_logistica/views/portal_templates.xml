@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_service_list" name="Mis Servicios">
+        <t t-call="portal.portal_layout">
+            <div class="container my-4 bg-white p-4 shadow-sm rounded">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="text-primary">Mis Servicios de Custodia</h2>
+                    <a t-att-href="'/solicitar-servicio'" class="btn btn-primary shadow-sm">
+                        <i class="fa fa-plus-circle me-1"/> Solicitar Servicio
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Folio</th>
+                                <th>Ruta</th>
+                                <th>Inicio</th>
+                                <th>Nivel</th>
+                                <th>Estado</th>
+                                <th class="text-end">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-if="services">
+                                <t t-foreach="services" t-as="s">
+                                    <tr>
+                                        <td><strong><t t-esc="s.sequence"/></strong></td>
+                                        <td><t t-esc="s.ruta_id.name"/></td>
+                                        <td><t t-esc="s.start_datetime"/></td>
+                                        <td><span class="badge bg-secondary">Nivel <t t-esc="s.nivel_seguridad"/></span></td>
+                                        <td><span t-field="s.state" class="badge rounded-pill bg-info text-dark"/></td>
+                                        <td class="text-end">
+                                            <a t-att-href="'/mis-servicios/%s?access_token=%s' % (s.id, s.access_token)" 
+                                               class="btn btn-sm btn-outline-primary">Ver Detalle</a>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <tr><td colspan="6" class="text-center text-muted py-5">No existen servicios registrados.</td></tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_service_detail" name="Detalle del Servicio">
+        <t t-call="portal.portal_layout">
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+            <div class="container my-4 bg-white p-4 shadow-sm rounded pb-5">
+                <div class="d-flex justify-content-between align-items-center pt-3 border-bottom pb-3">
+                    <h2 class="m-0">Servicio <t t-esc="service.sequence"/></h2>
+                    <span t-field="service.state" class="badge rounded-pill bg-info text-dark p-2 px-3"/>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h4 class="text-muted border-bottom pb-2">Información General</h4>
+                        <p><strong>Cliente:</strong> <t t-esc="service.partner_id.name"/></p>
+                        <p><strong>Ruta:</strong> <t t-esc="service.ruta_id.name"/></p>
+                        <p><strong>Inicio Programado:</strong> <t t-esc="service.start_datetime"/></p>
+                        <p><strong>Nivel de Seguridad:</strong> <t t-esc="service.nivel_seguridad"/></p>
+                        <p><strong>Load ID:</strong> <t t-esc="service.load_id"/></p>
+                    </div>
+                    <div class="col-md-6 border-start">
+                        <h4 class="text-muted border-bottom pb-2">Datos de Logística</h4>
+                        <ul class="list-unstyled">
+                            <li><strong>Unidad:</strong> <span t-field="service.tipo_unidad"/></li>
+                            <li><strong>Placas:</strong> <span t-field="service.placas"/></li>
+                            <li><strong>Transporte:</strong> <span t-field="service.transporte"/></li>
+                            <li><strong>Operador:</strong> <span t-field="service.operador1_nombre"/></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-4 p-3 bg-light rounded border">
+                    <h4>Control de Servicio</h4>
+                    <t t-if="not service.hora_llegada">
+                        <button id="btn-llegada" t-att-data-service-id="service.id" class="btn btn-warning me-2">Marcar llegada custodio</button>
+                    </t>
+                    <t t-if="service.hora_llegada and not service.hora_inicio_real">
+                        <button id="btn-iniciar-servicio" t-att-data-service-id="service.id" class="btn btn-success">Iniciar servicio</button>
+                    </t>
+                    <div class="row mt-3">
+                        <div class="col-md-6"><p><strong>Llegada:</strong> <t t-esc="service.hora_llegada or 'Pendiente'"/> (<t t-esc="service.diff_llegada_min"/> min)</p></div>
+                        <div class="col-md-6"><p><strong>Inicio Real:</strong> <t t-esc="service.hora_inicio_real or 'Pendiente'"/> (<t t-esc="service.diff_inicio_min"/> min)</p></div>
+                    </div>
+                </div>
+
+                <div class="mt-3 p-3 border rounded bg-white shadow-sm">
+                    <h5><i class="fa fa-exclamation-circle text-danger"/> Reportar Incidencia</h5>
+                    <textarea id="incidencia_msg" class="form-control mb-2" placeholder="Describa la situación..."></textarea>
+                    <button id="btn-incidencia" t-att-data-service-id="service.id" class="btn btn-danger w-100">Enviar Reporte</button>
+                </div>
+
+                <div class="mt-5">
+                    <h4 class="mb-3">Ruta Planeada</h4>
+                    <div id="route-map" t-att-data-ruta-id="service.ruta_id.id" class="border rounded shadow-sm" style="height: 500px !important; min-height: 500px; width: 100%; display: block !important;"/>
+                    <div id="route-summary" class="mt-2 p-2 bg-light border text-center" style="display:none;">
+                        <strong>Distancia:</strong> <span id="route-distance"/> | <strong>Tiempo:</strong> <span id="route-duration"/>
+                    </div>
+                </div>
+
+                <div class="mt-5">
+                    <h4 class="mb-3">Monitoreo en Vivo</h4>
+                    <div id="live-map" t-att-data-service-id="service.id" t-att-data-token="service.access_token" class="border rounded shadow-sm" style="height: 450px !important; min-height: 450px; width: 100%; display: block !important;"/>
+                </div>
+
+                <div id="service_communication" class="mt-5 pt-4 border-top">
+                    <h4 class="mb-4">Seguimiento e Incidencias</h4>
+                    <t t-call="portal.message_thread">
+                        <t t-set="object" t-value="service"/>
+                        <t t-set="token" t-value="service.access_token"/>
+                    </t>
+                </div>
+            </div>
+            <script type="text/javascript" src="/custodia_logistica/static/src/js/route_map.js"></script>
+        </t>
+    </template>
+
+    <template id="portal_my_home_custodia" inherit_id="portal.portal_my_home" name="Custodia Portal">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Servicios de Custodia</t>
+                <t t-set="url" t-value="'/mis-servicios'"/>
+                <t t-set="placeholder_count" t-value="'services_count'"/>
+            </t>
+        </xpath>
+    </template>
+</odoo>

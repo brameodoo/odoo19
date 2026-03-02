@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_service_form" name="Solicitar Servicio de Custodia">
+        <t t-call="portal.portal_layout">
+            <div id="wrap" class="container my-4">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="card shadow">
+                            <div class="card-header bg-primary text-white">
+                                <h3 class="mb-0">Nueva Solicitud de Custodia</h3>
+                            </div>
+                            <div class="card-body">
+                                <t t-if="error">
+                                    <div class="alert alert-danger" role="alert">
+                                        <t t-esc="error"/>
+                                    </div>
+                                </t>
+
+                                <form action="/solicitar-servicio/submit" method="post" enctype="multipart/form-data">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label" for="contact_id">Contacto Solicitante</label>
+                                            <select name="contact_id" class="form-select" required="1">
+                                                <t t-foreach="contacts" t-as="c">
+                                                    <option t-att-value="c.id"><t t-esc="c.name"/></option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label" for="carrier_id">Carrier (Transportista)</label>
+                                            <select name="carrier_id" class="form-select" required="1">
+                                                <t t-foreach="carriers" t-as="car">
+                                                    <option t-att-value="car.id"><t t-esc="car.name"/></option>
+                                                </t>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label" for="ruta_id">Ruta de Servicio</label>
+                                            <select name="ruta_id" class="form-select" required="1">
+                                                <t t-foreach="rutas" t-as="r">
+                                                    <option t-att-value="r.id"><t t-esc="r.name"/></option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label" for="start_datetime">Fecha y Hora de Inicio</label>
+                                            <input type="datetime-local" name="start_datetime" class="form-control" required="1"/>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label" for="nivel_seguridad">Nivel de Seguridad</label>
+                                            <select name="nivel_seguridad" class="form-select" required="1">
+                                                <option value="1">Nivel 1</option>
+                                                <option value="2">Nivel 2</option>
+                                                <option value="3">Nivel 3</option>
+                                                <option value="4">Nivel 4</option>
+                                                <option value="4x">Excepción + Nivel 4</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label" for="load_id">Load ID (Referencia)</label>
+                                            <input type="text" name="load_id" class="form-control" placeholder="Ej. L-99823" required="1"/>
+                                        </div>
+                                    </div>
+
+                                    <hr/>
+                                    <h5 class="text-muted mb-3">Datos del Vehículo de Carga</h5>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label" for="tipo_unidad">Tipo de Unidad</label>
+                                            <input type="text" name="tipo_unidad" class="form-control" placeholder="Ej. Tráiler 53ft"/>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label" for="placas">Placas</label>
+                                            <input type="text" name="placas" class="form-control"/>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label" for="transporte">Línea de Transporte</label>
+                                            <input type="text" name="transporte" class="form-control"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label" for="operador1_nombre">Nombre del Operador</label>
+                                            <input type="text" name="operador1_nombre" class="form-control"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label" for="tel_monitoreo_1">Teléfono Monitoreo</label>
+                                            <input type="text" name="tel_monitoreo_1" class="form-control"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <a href="/mis-servicios" class="btn btn-secondary me-2">Cancelar</a>
+                                        <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
