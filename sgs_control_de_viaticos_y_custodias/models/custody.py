@@ -60,7 +60,7 @@ class SgsCustodian(models.Model):
         for rec in self:
             if rec.employee_id:
                # rec.name = rec.employee_id.name
-                rec.employee_number = rec.employee_id.registration_number or rec.employee_id.barcode or rec.employee_number or ''
+                rec.employee_number = rec.employee_id.employee_id or rec.employee_id.barcode or rec.employee_number or ''
                 rec.position = rec.employee_id.job_title or (rec.employee_id.job_id.name if rec.employee_id.job_id else '')
                 rec.phone = rec.employee_id.mobile_phone or rec.employee_id.work_phone or rec.phone or ''
 
