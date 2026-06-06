@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Vista de Lista Custodios -->
-    <record id="view_sgs_custodian_list" model="ir.ui.view">
-        <field name="name">sgs.custodian.list</field>
-        <field name="model">sgs.custodian</field>
-        <field name="arch" type="xml">
-            <tree decoration-danger="balance &lt; 0"
-                  decoration-warning="pending_service_count &gt; 0"
-                  decoration-success="compliance_state == 'green'">
-                <field name="employee_number"/>
-                <field name="name"/>
-                <field name="employee_id"/>
-                <field name="position"/>
-                <field name="phone"/>
-                <field name="initial_fund" sum="Fondo"/>
-                <field name="total_deposits" sum="Depósitos"/>
-                <field name="total_expenses" sum="Gastos"/>
-                <field name="balance" sum="Saldo"/>
-                <field name="compliance_state" widget="badge"/>
-                <!-- Campo invisible necesario para decoración -->
-                <field name="pending_service_count" column_invisible="True"/>
-            </tree>
-        </field>
-    </record>
+<record id="view_sgs_custodian_list" model="ir.ui.view">
+    <field name="name">sgs.custodian.list</field>
+    <field name="model">sgs.custodian</field>
+    <field name="arch" type="xml">
+        <list decoration-danger="balance &lt; 0"
+              decoration-warning="pending_service_count &gt; 0"
+              decoration-success="compliance_state == 'green'">
+            <field name="employee_number"/>
+            <field name="name"/>
+            <field name="employee_id"/>
+            <field name="position"/>
+            <field name="phone"/>
+            <field name="initial_fund" sum="Fondo"/>
+            <field name="total_deposits" sum="Depósitos"/>
+            <field name="total_expenses" sum="Gastos"/>
+            <field name="balance" sum="Saldo"/>
+            <field name="compliance_state" widget="badge"/>
+            <!-- Campo invisible necesario para decoración -->
+            <field name="pending_service_count" column_invisible="True"/>
+        </list>
+    </field>
+</record>
 
     <!-- Formulario de Servicios -->
     <record id="view_sgs_service_form" model="ir.ui.view">
