@@ -5,7 +5,7 @@
         <field name="name">sgs.custodian.kanban</field>
         <field name="model">sgs.custodian</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_mobile">
+            <kanban>
                 <field name="name"/>
                 <field name="employee_number"/>
                 <field name="balance"/>
@@ -13,20 +13,26 @@
                 <field name="compliance_state"/>
                 <field name="currency_id"/>
                 <templates>
-                    <t t-name="card">
-                        <div class="oe_kanban_global_click sgs-kanban-card">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <strong><field name="name"/></strong><br/>
-                                    <span class="text-muted"><field name="employee_number"/> · <field name="position"/></span>
+                    <t t-name="kanban-box">
+                        <div class="card o_kanban_record oe_kanban_global_click">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-8">
+                                        <strong><field name="name"/></strong><br/>
+                                        <span class="text-muted"><field name="employee_number"/> · <field name="position"/></span>
+                                    </div>
+                                    <div class="col-4 text-end">
+                                        <field name="balance" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                        <field name="compliance_state" widget="badge"
+                                               decoration-success="compliance_state == 'green'"
+                                               decoration-warning="compliance_state == 'yellow'"
+                                               decoration-danger="compliance_state == 'red'"/>
+                                    </div>
                                 </div>
-                                <span t-attf-class="badge rounded-pill #{record.compliance_state.raw_value == 'green' and 'text-bg-success' or record.compliance_state.raw_value == 'yellow' and 'text-bg-warning' or record.compliance_state.raw_value == 'red' and 'text-bg-danger' or 'text-bg-info'}">
-                                    <field name="compliance_state"/>
-                                </span>
-                            </div>
-                            <div class="mt-3 d-flex justify-content-between">
-                                <div><small>Saldo</small><br/><strong><field name="balance" widget="monetary" options="{'currency_field': 'currency_id'}"/></strong></div>
-                                <div><small>Gastos</small><br/><strong><field name="total_expenses" widget="monetary" options="{'currency_field': 'currency_id'}"/></strong></div>
+                                <div class="mt-3 d-flex justify-content-between">
+                                    <div><small>Saldo</small><br/><strong><field name="balance" widget="monetary" options="{'currency_field': 'currency_id'}"/></strong></div>
+                                    <div><small>Gastos</small><br/><strong><field name="total_expenses" widget="monetary" options="{'currency_field': 'currency_id'}"/></strong></div>
+                                </div>
                             </div>
                         </div>
                     </t>
@@ -35,12 +41,14 @@
         </field>
     </record>
 
-    <!-- Vista de Lista Moderna de Custodios -->
+    <!-- Vista de Lista Custodios -->
     <record id="view_sgs_custodian_list" model="ir.ui.view">
         <field name="name">sgs.custodian.list</field>
         <field name="model">sgs.custodian</field>
         <field name="arch" type="xml">
-            <list decoration-danger="balance &lt; 0" decoration-warning="pending_service_count &gt; 0" decoration-success="compliance_state == 'green'">
+            <list decoration-danger="balance &lt; 0"
+                  decoration-warning="pending_service_count &gt; 0"
+                  decoration-success="compliance_state == 'green'">
                 <field name="employee_number"/>
                 <field name="name"/>
                 <field name="employee_id"/>
@@ -51,11 +59,14 @@
                 <field name="total_expenses" sum="Gastos"/>
                 <field name="balance" sum="Saldo"/>
                 <field name="compliance_state" widget="badge"/>
+                <!-- Campos invisibles necesarios -->
+                <field name="pending_service_count" column_invisible="True"/>
+                <field name="currency_id" column_invisible="True"/>
             </list>
         </field>
     </record>
 
-    <!-- Formulario Completo de Custodios - Conexión con Empleado Odoo 19 -->
+    <!-- Formulario Completo de Custodios -->
     <record id="view_sgs_custodian_form" model="ir.ui.view">
         <field name="name">sgs.custodian.form</field>
         <field name="model">sgs.custodian</field>
@@ -71,8 +82,7 @@
                     </div>
                     <group>
                         <group string="Vinculación de Personal">
-                            <!-- NUEVO CAMPO: Relación al modelo de empleados oficial hr.employee -->
-                            <field name="employee_id" placeholder="Vincular con empleado oficial..."/>
+                            <field name="employee_id"/>
                             <field name="employee_number"/>
                             <field name="position"/>
                             <field name="phone"/>
@@ -98,6 +108,7 @@
                                     <field name="week"/>
                                     <field name="concept"/>
                                     <field name="amount"/>
+                                    <field name="currency_id" column_invisible="True"/>
                                 </list>
                             </field>
                         </page>
@@ -110,6 +121,7 @@
                                     <field name="origin"/>
                                     <field name="destination"/>
                                     <field name="amount_total"/>
+                                    <field name="currency_id" column_invisible="True"/>
                                     <field name="status" widget="badge"/>
                                     <field name="is_late"/>
                                 </list>
@@ -123,6 +135,7 @@
                                     <field name="provider"/>
                                     <field name="provider_vat"/>
                                     <field name="amount"/>
+                                    <field name="currency_id" column_invisible="True"/>
                                 </list>
                             </field>
                         </page>
@@ -141,7 +154,9 @@
         <field name="name">sgs.route.service.list</field>
         <field name="model">sgs.route.service</field>
         <field name="arch" type="xml">
-            <list decoration-danger="status == 'rejected' or is_late" decoration-warning="status == 'pending'" decoration-success="status == 'approved'">
+            <list decoration-danger="status == 'rejected' or is_late"
+                  decoration-warning="status == 'pending'"
+                  decoration-success="status == 'approved'">
                 <field name="name"/>
                 <field name="date"/>
                 <field name="custodian_id"/>
@@ -150,13 +165,14 @@
                 <field name="destination"/>
                 <field name="vehicle_snapshot"/>
                 <field name="amount_total" sum="Total"/>
+                <field name="currency_id" column_invisible="True"/>
                 <field name="status" widget="badge"/>
                 <field name="is_late"/>
             </list>
         </field>
     </record>
 
-    <!-- Formulario de Pedido / Ruta de Custodia -->
+    <!-- Formulario de Servicios -->
     <record id="view_sgs_service_form" model="ir.ui.view">
         <field name="name">sgs.route.service.form</field>
         <field name="model">sgs.route.service</field>
@@ -173,55 +189,3 @@
                         <h1><field name="name"/></h1>
                     </div>
                     <group>
-                        <group string="Planificación">
-                            <field name="custodian_id"/>
-                            <field name="date"/>
-                            <field name="submit_datetime"/>
-                            <field name="is_late"/>
-                            <field name="client_id"/>
-                        </group>
-                        <group string="Vehículo y Custodias">
-                            <field name="origin" placeholder="Ej: Guadalajara"/>
-                            <field name="destination" placeholder="Ej: Nuevo Laredo"/>
-                            <field name="companion" placeholder="Custodios a bordo o unidad"/>
-                            <field name="vehicle_id"/>
-                            <field name="vehicle_snapshot"/>
-                            <field name="plate_snapshot"/>
-                        </group>
-                    </group>
-                    <group string="Desglose de Gastos">
-                        <group>
-                            <field name="amount_perdiem"/>
-                            <field name="amount_fuel"/>
-                            <field name="amount_lodging"/>
-                            <field name="amount_misc"/>
-                            <field name="misc_detail" placeholder="Obligatorio si existe gasto vario"/>
-                        </group>
-                        <group>
-                            <field name="amount_tolls" readonly="1"/>
-                            <field name="amount_total" readonly="1"/>
-                            <field name="evidence_image" widget="image" filename="evidence_filename"/>
-                            <field name="evidence_filename" invisible="1"/>
-                        </group>
-                    </group>
-                    <notebook>
-                        <page string="Casetas">
-                            <field name="toll_line_ids">
-                                <list editable="bottom">
-                                    <field name="name"/>
-                                    <field name="amount"/>
-                                    <field name="image" widget="image" filename="image_filename"/>
-                                    <field name="image_filename" invisible="1"/>
-                                </list>
-                            </field>
-                        </page>
-                        <page string="Comentarios">
-                            <field name="comments"/>
-                            <field name="validation_note"/>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
-        </field>
-    </record>
-</odoo>
