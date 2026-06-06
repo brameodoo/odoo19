@@ -51,6 +51,7 @@
                 <field name="total_expenses" sum="Gastos"/>
                 <field name="balance" sum="Saldo"/>
                 <field name="compliance_state" widget="badge"/>
+                <field name="pending_service_count" column_invisible="True"/>
             </list>
         </field>
     </record>
