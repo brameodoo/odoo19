@@ -1,0 +1,30 @@
+# -*- coding: utf-8 -*-
+{
+    'name': 'Reingeniería - Gestión de Auditorías ISO 9001 & CDO',
+    'version': '19.0.1.0.0',
+    'category': 'Quality',
+    'summary': 'Auditorías internas por CDO, ingestión masiva de checklists Excel F-CAL-15_R01, NCR y CAPA.',
+    'author': 'Reingeniería de Procedimientos',
+    'depends': ['base', 'mail', 'hr'],
+    'data': [
+        'security/security_groups.xml',
+        'security/ir.model.access.csv',
+        'data/ir_sequence_data.xml',
+        'data/iso_clause_data.xml',
+        'wizards/audit_excel_import_wizard_views.xml',
+        'views/audit_cdo_views.xml',
+        'views/audit_template_views.xml',
+        'views/iso_audit_views.xml',
+        'views/quality_ncr_views.xml',
+        'views/quality_capa_views.xml',
+        'views/audit_menus.xml',
+        'reports/audit_reports.xml',
+        'reports/audit_report_templates.xml',
+    ],
+    'external_dependencies': {
+        'python': ['openpyxl'],
+    },
+    'installable': True,
+    'application': True,
+    'license': 'LGPL-3',
+}
