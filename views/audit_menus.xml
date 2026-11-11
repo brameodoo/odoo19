@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Menú Raíz -->
+    <menuitem id="menu_root_iso_audit" name="Reingeniería ISO" web_icon="reingenieria_iso_audit,static/description/icon.png" sequence="25"/>
+
+    <!-- Secciones -->
+    <menuitem id="menu_audit_operations" name="Auditorías" parent="menu_root_iso_audit" sequence="10"/>
+    <menuitem id="menu_audit_quality" name="Calidad y Hallazgos" parent="menu_root_iso_audit" sequence="20"/>
+    <menuitem id="menu_audit_config" name="Configuración" parent="menu_root_iso_audit" sequence="90"/>
+
+    <!-- Acciones -->
+    <record id="action_iso_audit_view" model="ir.actions.act_window">
+        <field name="name">Auditorías Internas</field>
+        <field name="res_model">iso.audit</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+    <record id="action_quality_ncr_view" model="ir.actions.act_window">
+        <field name="name">No Conformidades (NCR)</field>
+        <field name="res_model">quality.ncr</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="action_audit_cdo_view" model="ir.actions.act_window">
+        <field name="name">Centros de Operación (CDO)</field>
+        <field name="res_model">audit.cdo</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_sub_iso_audits" name="Auditorías" parent="menu_audit_operations" action="action_iso_audit_view" sequence="1"/>
+    <menuitem id="menu_sub_import_wizard" name="Importar Checklist Excel" parent="menu_audit_operations" action="action_audit_excel_import_wizard" sequence="2"/>
+    <menuitem id="menu_sub_quality_ncrs" name="No Conformidades" parent="menu_audit_quality" action="action_quality_ncr_view" sequence="1"/>
+    <menuitem id="menu_sub_cdo_config" name="Estaciones CDO" parent="menu_audit_config" action="action_audit_cdo_view" sequence="1"/>
+</odoo>
