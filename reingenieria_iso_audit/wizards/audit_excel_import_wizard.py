@@ -2,9 +2,10 @@
 import base64
 import io
 import openpyxl
-from datetime import datetime, time
+from datetime import datetime
 from odoo import models, fields, _
 from odoo.exceptions import UserError
+
 
 class AuditExcelImportWizard(models.TransientModel):
     _name = 'audit.excel.import.wizard'
@@ -26,13 +27,11 @@ class AuditExcelImportWizard(models.TransientModel):
         auditor_str = sheet.cell(7, 3).value or ''
         process_str = sheet.cell(8, 3).value or ''
         procedure_str = sheet.cell(9, 3).value or ''
-        audited_str = sheet.cell(10, 3).value or ''
         job_str = sheet.cell(11, 3).value or ''
-        
+
         date_val = sheet.cell(8, 6).value
         time_val = sheet.cell(9, 6).value
         cdo_raw = sheet.cell(10, 6).value or 'CDO Desconocido'
-        department_str = sheet.cell(11, 6).value or ''
 
         # Resolución / Creación Automática de CDO
         cdo = self.env['audit.cdo'].search([('code', '=', str(cdo_raw).strip())], limit=1)
@@ -43,7 +42,10 @@ class AuditExcelImportWizard(models.TransientModel):
             })
 
         # Auditor líder (fallback al usuario activo)
-        auditor_user = self.env['res.users'].search([('name', 'ilike', auditor_str)], limit=1) or self.env.user
+        auditor_user = (
+            self.env['res.users'].search([('name', 'ilike', auditor_str)], limit=1)
+            or self.env.user
+        )
 
         audit_date = fields.Date.context_today(self)
         if isinstance(date_val, datetime):
@@ -68,7 +70,7 @@ class AuditExcelImportWizard(models.TransientModel):
         result_mapping = {
             'cumple': 'compliant',
             'no cumple': 'non_compliant',
-            'no aplica': 'not_applicable'
+            'no aplica': 'not_applicable',
         }
 
         for r in range(14, sheet.max_row + 1):
@@ -82,7 +84,7 @@ class AuditExcelImportWizard(models.TransientModel):
                 item_no = int(cell_a)
                 iso_clause = sheet.cell(r, 2).value or ''
                 question = sheet.cell(r, 4).value or ''
-                context = sheet.cell(r, 7).value or ''
+                question_context = sheet.cell(r, 7).value or ''
                 expected_ev = sheet.cell(r, 9).value or ''
                 raw_res = str(sheet.cell(r, 12).value or '').strip().lower()
                 obj_ev = sheet.cell(r, 13).value or ''
@@ -97,7 +99,7 @@ class AuditExcelImportWizard(models.TransientModel):
                     'criteria_type': current_criteria,
                     'iso_clause': iso_clause,
                     'question': question,
-                    'context': context,
+                    'context': question_context,
                     'expected_evidence': expected_ev,
                     'result': norm_result,
                     'objective_evidence': obj_ev,
