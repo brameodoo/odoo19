@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="template_iso_9001_organizational" model="audit.template">
+            <field name="name">Criterios Organizacionales ISO 9001:2015 (30%)</field>
+            <field name="code">F-CAL-15_R01-ORG</field>
+            <field name="standard">iso9001_2015</field>
+            <field name="description">Banco transversal de 25 reactivos organizacionales aplicables a auditorías de procesos.</field>
+        </record>
+
+        <record id="tpl_line_org_01" model="audit.template.line">
+            <field name="template_id" ref="template_iso_9001_organizational"/>
+            <field name="sequence">1</field>
+            <field name="criteria_type">organizational</field>
+            <field name="iso_clause">5.3 Roles, responsabilidades y autoridades en la organización</field>
+            <field name="question">¿Cuál es tu puesto de trabajo y tus principales responsabilidades? ¿En dónde las puedes consultar?</field>
+            <field name="context">Verificar que el personal conoce su rol, responsabilidades y autoridad dentro de sus actividades.</field>
+            <field name="expected_evidence">Descripción de puesto, organigrama, perfil de puesto, matriz de responsabilidades (RACI), intranet o repositorio documental.</field>
+        </record>
+
+        <record id="tpl_line_org_02" model="audit.template.line">
+            <field name="template_id" ref="template_iso_9001_organizational"/>
+            <field name="sequence">2</field>
+            <field name="criteria_type">organizational</field>
+            <field name="iso_clause">5.1.2 Enfoque al cliente</field>
+            <field name="question">¿Sabes quiénes son tus clientes (externo/interno)? ¿Cómo contribuyen tus actividades a la satisfacción del mismo?</field>
+            <field name="context">Confirmar el enfoque al cliente y la comprensión de cómo el puesto aporta valor al proceso y al cliente.</field>
+            <field name="expected_evidence">Entrevista al colaborador, mapa de procesos, identificación de clientes internos y externos, indicadores de satisfacción del cliente.</field>
+        </record>
+
+        <record id="tpl_line_org_03" model="audit.template.line">
+            <field name="template_id" ref="template_iso_9001_organizational"/>
+            <field name="sequence">3</field>
+            <field name="criteria_type">organizational</field>
+            <field name="iso_clause">8.2 Requisitos para los productos y servicios</field>
+            <field name="question">¿En dónde identificas los requisitos de tu cliente (interno/externo)?</field>
+            <field name="context">Verificar que el personal conoce las fuentes donde se establecen los requisitos aplicables.</field>
+            <field name="expected_evidence">Contratos, pedidos, especificaciones, ordenes de servicio, procedimientos, requerimientos legales o regulatorios.</field>
+        </record>
+
+        <record id="tpl_line_org_04" model="audit.template.line">
+            <field name="template_id" ref="template_iso_9001_organizational"/>
+            <field name="sequence">4</field>
+            <field name="criteria_type">organizational</field>
+            <field name="iso_clause">8.5 Producción y provisión del servicio</field>
+            <field name="question">¿Cómo aseguras el cumplimiento de estos requisitos?</field>
+            <field name="context">Evaluar los controles implementados para garantizar el cumplimiento de los requisitos del cliente.</field>
+            <field name="expected_evidence">Procedimientos, instrucciones de trabajo, listas de verificación, controles operativos, registros de revisión.</field>
+        </record>
+
+        <record id="tpl_line_org_05" model="audit.template.line">
+            <field name="template_id" ref="template_iso_9001_organizational"/>
+            <field name="sequence">5</field>
+            <field name="criteria_type">organizational</field>
+            <field name="iso_clause">9.1.2 Satisfacción del cliente</field>
+            <field name="question">¿Cómo recibes quejas o retroalimentación de tus clientes relacionadas con tu proceso? ¿Dónde las registras? ¿A quién comunicas? ¿Qué tratamiento le das?</field>
+            <field name="context">Verificar la gestión de la satisfacción del cliente y el tratamiento de quejas.</field>
+            <field name="expected_evidence">Registros de quejas, tickets, correos electrónicos, bitácoras, acciones correctivas, reportes de seguimiento.</field>
+        </record>
+    </data>
+</odoo>
