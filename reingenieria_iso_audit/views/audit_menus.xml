@@ -8,7 +8,7 @@
     <menuitem id="menu_audit_quality" name="Calidad y Hallazgos" parent="menu_root_iso_audit" sequence="20"/>
     <menuitem id="menu_audit_config" name="Configuración" parent="menu_root_iso_audit" sequence="90"/>
 
-    <!-- Acciones -->
+    <!-- Acciones Base -->
     <record id="action_iso_audit_view" model="ir.actions.act_window">
         <field name="name">Auditorías Internas</field>
         <field name="res_model">iso.audit</field>
@@ -27,8 +27,15 @@
         <field name="view_mode">list,form</field>
     </record>
 
+    <!-- Submenús: Auditorías -->
     <menuitem id="menu_sub_iso_audits" name="Auditorías" parent="menu_audit_operations" action="action_iso_audit_view" sequence="1"/>
     <menuitem id="menu_sub_import_wizard" name="Importar Checklist Excel" parent="menu_audit_operations" action="action_audit_excel_import_wizard" sequence="2"/>
+
+    <!-- Submenús: Calidad y Hallazgos -->
     <menuitem id="menu_sub_quality_ncrs" name="No Conformidades" parent="menu_audit_quality" action="action_quality_ncr_view" sequence="1"/>
+    <menuitem id="menu_sub_quality_capas" name="Acciones CAPA" parent="menu_audit_quality" action="action_quality_capa_view" sequence="2"/>
+
+    <!-- Submenús: Configuración -->
     <menuitem id="menu_sub_cdo_config" name="Estaciones CDO" parent="menu_audit_config" action="action_audit_cdo_view" sequence="1"/>
+    <menuitem id="menu_sub_audit_templates" name="Plantillas de Checklist" parent="menu_audit_config" action="action_audit_template_view" sequence="2"/>
 </odoo>
