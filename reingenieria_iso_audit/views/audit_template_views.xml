@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_audit_template_list" model="ir.ui.view">
+        <field name="name">audit.template.list</field>
+        <field name="model">audit.template</field>
+        <field name="arch" type="xml">
+            <list string="Plantillas de Checklist">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="standard"/>
+                <field name="line_count"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_audit_template_form" model="ir.ui.view">
+        <field name="name">audit.template.form</field>
+        <field name="model">audit.template</field>
+        <field name="arch" type="xml">
+            <form string="Plantilla de Checklist">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="standard"/>
+                        </group>
+                        <group>
+                            <field name="line_count"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Objetivo o alcance de la plantilla..."/>
+                    <notebook>
+                        <page string="Reactivos de la Plantilla" name="lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="criteria_type"/>
+                                    <field name="iso_clause"/>
+                                    <field name="question"/>
+                                    <field name="context"/>
+                                    <field name="expected_evidence"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_audit_template_view" model="ir.actions.act_window">
+        <field name="name">Plantillas de Checklist</field>
+        <field name="res_model">audit.template</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_sub_audit_templates"
+              name="Plantillas de Checklist"
+              parent="menu_audit_config"
+              action="action_audit_template_view"
+              sequence="2"/>
+</odoo>
