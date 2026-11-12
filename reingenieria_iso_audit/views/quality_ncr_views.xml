@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_quality_ncr_list" model="ir.ui.view">
+        <field name="name">quality.ncr.list</field>
+        <field name="model">quality.ncr</field>
+        <field name="arch" type="xml">
+            <list string="No Conformidades (NCR)" decoration-danger="severity == 'critical'" decoration-warning="severity == 'major'">
+                <field name="name"/>
+                <field name="cdo_id"/>
+                <field name="audit_id"/>
+                <field name="clause"/>
+                <field name="severity" widget="badge" decoration-danger="severity == 'critical'" decoration-warning="severity == 'major'"/>
+                <field name="responsible_user_id"/>
+                <field name="deadline_date"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_quality_ncr_form" model="ir.ui.view">
+        <field name="name">quality.ncr.form</field>
+        <field name="model">quality.ncr</field>
+        <field name="arch" type="xml">
+            <form string="Reporte de No Conformidad (NCR)">
+                <header>
+                    <button name="action_close" string="Cerrar NCR" type="object" invisible="state == 'closed'" class="oe_highlight"/>
+                    <field name="state" widget="statusbar" statusbar_visible="open,investigating,action_planned,verifying,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="cdo_id"/>
+                            <field name="audit_id"/>
+                            <field name="checklist_line_id"/>
+                            <field name="clause"/>
+                        </group>
+                        <group>
+                            <field name="severity"/>
+                            <field name="responsible_user_id"/>
+                            <field name="deadline_date"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Descripción y Contención" name="general">
+                            <group>
+                                <field name="description"/>
+                                <field name="immediate_containment"/>
+                            </group>
+                        </page>
+                        <page string="Análisis Causa Raíz (5 Porqués)" name="five_whys">
+                            <group>
+                                <field name="why_1"/>
+                                <field name="why_2"/>
+                                <field name="why_3"/>
+                                <field name="why_4"/>
+                                <field name="why_5"/>
+                                <field name="root_cause_conclusion"/>
+                            </group>
+                        </page>
+                        <page string="Acciones Correctivas (CAPA)" name="capas">
+                            <field name="capa_ids" context="{'default_ncr_id': id}">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="description"/>
+                                    <field name="responsible_user_id"/>
+                                    <field name="date_implemented"/>
+                                    <field name="effectiveness_due_date"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>
