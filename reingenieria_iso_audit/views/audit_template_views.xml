@@ -60,10 +60,4 @@
         <field name="res_model">audit.template</field>
         <field name="view_mode">list,form</field>
     </record>
-
-    <menuitem id="menu_sub_audit_templates"
-              name="Plantillas de Checklist"
-              parent="menu_audit_config"
-              action="action_audit_template_view"
-              sequence="2"/>
 </odoo>
