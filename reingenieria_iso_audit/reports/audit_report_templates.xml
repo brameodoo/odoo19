@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- =========================================================
+         PLANTILLA 1: INFORME DE AUDITORÍA INTERNA (F-CAL-15_R01)
+         ========================================================= -->
+    <template id="report_iso_audit_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Encabezado de Control -->
+                        <div class="row mb-3 border-bottom pb-2">
+                            <div class="col-8">
+                                <h3 class="text-primary mb-0">Informe de Auditoría Interna ISO 9001</h3>
+                                <small class="text-muted">Folio: <strong t-field="o.name"/> | Formato: <span t-field="o.format_code"/></small>
+                            </div>
+                            <div class="col-4 text-end">
+                                <div class="p-2 border rounded bg-light">
+                                    <span class="d-block small text-muted">Cumplimiento Global</span>
+                                    <h3 class="mb-0 text-primary">
+                                        <span t-esc="'%.2f' % (o.global_compliance_rate * 100)"/>%
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Metadatos de la Auditoría -->
+                        <table class="table table-sm table-bordered mb-4" style="font-size: 12px;">
+                            <tr>
+                                <th class="bg-light" style="width: 18%;">CDO / Estación:</th>
+                                <td style="width: 32%;"><span t-field="o.cdo_id.code"/> - <span t-field="o.cdo_id.name"/></td>
+                                <th class="bg-light" style="width: 18%;">Fecha / Hora:</th>
+                                <td style="width: 32%;"><span t-field="o.date"/> <span t-field="o.time"/></td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Proceso:</th>
+                                <td><span t-field="o.process_name"/></td>
+                                <th class="bg-light">Auditor Líder:</th>
+                                <td><span t-field="o.auditor_id.name"/></td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Procedimiento:</th>
+                                <td><span t-field="o.procedure_name"/></td>
+                                <th class="bg-light">Puesto Auditado:</th>
+                                <td><span t-field="o.audited_job_title"/></td>
+                            </tr>
+                        </table>
+
+                        <!-- Resumen Ponderado -->
+                        <div class="row mb-4" style="font-size: 12px;">
+                            <div class="col-6">
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr class="table-secondary">
+                                            <th colspan="2">Criterios Organizacionales (Ponderación 30%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Reactivos Aplicables / Cumple / No Cumple:</td>
+                                            <td class="text-end">
+                                                <span t-field="o.org_total_applicable"/> /
+                                                <span class="text-success" t-field="o.org_total_compliant"/> /
+                                                <span class="text-danger" t-field="o.org_total_non_compliant"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Contribución al Puntaje Global:</th>
+                                            <th class="text-end"><span t-esc="'%.2f' % (o.org_compliance_rate * 100)"/>%</th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr class="table-secondary">
+                                            <th colspan="2">Criterios Operativos (Ponderación 70%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Reactivos Aplicables / Cumple / No Cumple:</td>
+                                            <td class="text-end">
+                                                <span t-field="o.op_total_applicable"/> /
+                                                <span class="text-success" t-field="o.op_total_compliant"/> /
+                                                <span class="text-danger" t-field="o.op_total_non_compliant"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Contribución al Puntaje Global:</th>
+                                            <th class="text-end"><span t-esc="'%.2f' % (o.op_compliance_rate * 100)"/>%</th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Desglose del Checklist -->
+                        <h5 class="mb-2">Detalle de Evaluación del Checklist</h5>
+                        <table class="table table-sm table-bordered" style="font-size: 11px;">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="width: 5%;">ID</th>
+                                    <th style="width: 15%;">Cláusula / Req.</th>
+                                    <th style="width: 35%;">Pregunta</th>
+                                    <th style="width: 12%;">Resultado</th>
+                                    <th style="width: 33%;">Evidencia Objetiva / Hallazgo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="o.line_ids" t-as="line">
+                                    <tr>
+                                        <td class="text-center"><span t-field="line.item_number"/></td>
+                                        <td><span t-field="line.iso_clause"/></td>
+                                        <td><span t-field="line.question"/></td>
+                                        <td class="text-center">
+                                            <span t-if="line.result == 'compliant'" class="badge text-bg-success">Cumple</span>
+                                            <span t-if="line.result == 'non_compliant'" class="badge text-bg-danger">No Cumple</span>
+                                            <span t-if="line.result == 'not_applicable'" class="badge text-bg-secondary">No Aplica</span>
+                                            <span t-if="line.result == 'not_scored'" class="badge text-bg-warning">Sin Evaluar</span>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.objective_evidence"/>
+                                            <t t-if="line.finding_description">
+                                                <div class="mt-1 text-danger">
+                                                    <strong>Hallazgo: </strong><span t-field="line.finding_description"/>
+                                                </div>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- Firmas -->
+                        <div class="row mt-5 pt-4 text-center" style="font-size: 12px;">
+                            <div class="col-6">
+                                <div class="border-top mx-4 pt-1">
+                                    <strong t-field="o.auditor_id.name"/><br/>
+                                    <span class="text-muted">Auditor Líder - Reingeniería</span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="border-top mx-4 pt-1">
+                                    <strong t-field="o.audited_job_title"/><br/>
+                                    <span class="text-muted">Responsable Auditado (<span t-field="o.cdo_id.name"/>)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- =========================================================
+         PLANTILLA 2: REPORTE DE NO CONFORMIDAD Y CAPA (NCR)
+         ========================================================= -->
+    <template id="report_quality_ncr_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="ncr">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="row mb-3 border-bottom pb-2">
+                            <div class="col-8">
+                                <h3 class="text-danger mb-0">Reporte de No Conformidad (NCR)</h3>
+                                <small class="text-muted">Folio: <strong t-field="ncr.name"/> | Auditoría Origen: <span t-field="ncr.audit_id.name"/></small>
+                            </div>
+                            <div class="col-4 text-end">
+                                <span class="badge text-bg-danger fs-6">Severidad: <span t-field="ncr.severity"/></span>
+                            </div>
+                        </div>
+
+                        <table class="table table-sm table-bordered mb-4" style="font-size: 12px;">
+                            <tr>
+                                <th class="bg-light" style="width: 20%;">CDO / Estación:</th>
+                                <td style="width: 30%;"><span t-field="ncr.cdo_id.name"/></td>
+                                <th class="bg-light" style="width: 20%;">Fecha Límite:</th>
+                                <td style="width: 30%;"><span t-field="ncr.deadline_date"/></td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light">Cláusula / Req.:</th>
+                                <td><span t-field="ncr.clause"/></td>
+                                <th class="bg-light">Responsable:</th>
+                                <td><span t-field="ncr.responsible_user_id.name"/></td>
+                            </tr>
+                        </table>
+
+                        <h6>1. Descripción de la Desviación</h6>
+                        <div class="p-2 border rounded bg-light mb-3" style="font-size: 12px;">
+                            <span t-field="ncr.description"/>
+                        </div>
+
+                        <h6>2. Acción de Contención Inmediata</h6>
+                        <div class="p-2 border rounded mb-3" style="font-size: 12px;">
+                            <span t-field="ncr.immediate_containment"/>
+                        </div>
+
+                        <h6>3. Análisis de Causa Raíz (Metodología 5 Porqués)</h6>
+                        <table class="table table-sm table-bordered mb-4" style="font-size: 12px;">
+                            <tr><th style="width: 15%;" class="bg-light">1er Por qué:</th><td><span t-field="ncr.why_1"/></td></tr>
+                            <tr><th class="bg-light">2do Por qué:</th><td><span t-field="ncr.why_2"/></td></tr>
+                            <tr><th class="bg-light">3er Por qué:</th><td><span t-field="ncr.why_3"/></td></tr>
+                            <tr><th class="bg-light">4to Por qué:</th><td><span t-field="ncr.why_4"/></td></tr>
+                            <tr><th class="bg-light">5to Por qué:</th><td><span t-field="ncr.why_5"/></td></tr>
+                            <tr class="table-warning">
+                                <th>Causa Raíz:</th>
+                                <td><strong t-field="ncr.root_cause_conclusion"/></td>
+                            </tr>
+                        </table>
+
+                        <h6>4. Acciones Correctivas y Preventivas (CAPA)</h6>
+                        <table class="table table-sm table-bordered" style="font-size: 11px;">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>Folio CAPA</th>
+                                    <th>Plan de Acción</th>
+                                    <th>Responsable</th>
+                                    <th>Verificación (30 días)</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="ncr.capa_ids" t-as="capa">
+                                    <tr>
+                                        <td><span t-field="capa.name"/></td>
+                                        <td><span t-field="capa.description"/></td>
+                                        <td><span t-field="capa.responsible_user_id.name"/></td>
+                                        <td><span t-field="capa.effectiveness_due_date"/></td>
+                                        <td><span t-field="capa.state"/></td>
+                                    </tr>
+                                </t>
+                                <tr t-if="not ncr.capa_ids">
+                                    <td colspan="5" class="text-center text-muted">Sin acciones CAPA registradas aún.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
