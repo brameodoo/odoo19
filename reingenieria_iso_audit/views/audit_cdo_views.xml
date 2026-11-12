@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_audit_cdo_list" model="ir.ui.view">
+        <field name="name">audit.cdo.list</field>
+        <field name="model">audit.cdo</field>
+        <field name="arch" type="xml">
+            <list string="Centros de Operación (CDO)">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="state_id"/>
+                <field name="city"/>
+                <field name="responsible_user_id"/>
+                <field name="ncr_count"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_audit_cdo_form" model="ir.ui.view">
+        <field name="name">audit.cdo.form</field>
+        <field name="model">audit.cdo</field>
+        <field name="arch" type="xml">
+            <form string="Centro de Operación (CDO)">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Nombre de Estación"/>
+                        <h1><field name="name" placeholder="Ej. Corporativo SF"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code" placeholder="Ej. 1. Corporativo SF"/>
+                            <field name="responsible_user_id"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="state_id"/>
+                            <field name="city"/>
+                            <field name="ncr_count"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Auditorías Realizadas" name="audits">
+                            <field name="audit_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="process_name"/>
+                                    <field name="procedure_name"/>
+                                    <field name="global_compliance_rate" widget="percentage"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>
