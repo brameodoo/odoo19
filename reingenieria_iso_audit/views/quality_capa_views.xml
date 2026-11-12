@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_quality_capa_list" model="ir.ui.view">
+        <field name="name">quality.capa.list</field>
+        <field name="model">quality.capa</field>
+        <field name="arch" type="xml">
+            <list string="Acciones Correctivas y Preventivas (CAPA)">
+                <field name="name"/>
+                <field name="ncr_id"/>
+                <field name="responsible_user_id"/>
+                <field name="date_implemented"/>
+                <field name="effectiveness_due_date"/>
+                <field name="state" widget="badge" decoration-success="state == 'verified_effective'" decoration-warning="state == 'pending_verification'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_quality_capa_form" model="ir.ui.view">
+        <field name="name">quality.capa.form</field>
+        <field name="model">quality.capa</field>
+        <field name="arch" type="xml">
+            <form string="Acción Correctiva / Preventiva (CAPA)">
+                <header>
+                    <button name="action_mark_implemented" string="Marcar Implementada (Programar 30 días)" type="object" invisible="state not in ('draft', 'in_progress')" class="oe_highlight"/>
+                    <button name="action_verify_effective" string="Validar Eficacia" type="object" invisible="state != 'pending_verification'" class="oe_highlight"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,pending_verification,verified_effective"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="ncr_id"/>
+                            <field name="responsible_user_id"/>
+                        </group>
+                        <group>
+                            <field name="date_implemented"/>
+                            <field name="effectiveness_due_date"/>
+                        </group>
+                    </group>
+                    <group string="Definición y Seguimiento">
+                        <field name="description"/>
+                        <field name="effectiveness_evidence" placeholder="Documente la evidencia objetiva que demuestra que la acción eliminó la causa raíz..."/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_quality_capa_view" model="ir.actions.act_window">
+        <field name="name">Acciones Correctivas (CAPA)</field>
+        <field name="res_model">quality.capa</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_sub_quality_capas"
+              name="Acciones CAPA"
+              parent="menu_audit_quality"
+              action="action_quality_capa_view"
+              sequence="2"/>
+</odoo>
