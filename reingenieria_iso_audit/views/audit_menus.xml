@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Menú Tablero Principal (Sequence 1 para que abra por defecto al entrar a la App) -->
+    <menuitem id="menu_audit_dashboard"
+              name="Tablero"
+              parent="menu_root_iso_audit"
+              action="action_reingenieria_iso_dashboard"
+              sequence="1"/>
+    
     <!-- Menú Raíz -->
     <menuitem id="menu_root_iso_audit" name="Reingeniería ISO" web_icon="reingenieria_iso_audit,static/description/icon.png" sequence="25"/>
 
