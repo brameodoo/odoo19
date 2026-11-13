@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_reingenieria_iso_dashboard" model="ir.actions.client">
+        <field name="name">Tablero ISO 9001</field>
+        <field name="tag">reingenieria_iso_audit.dashboard_tag</field>
+    </record>
+</odoo>
