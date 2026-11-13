@@ -6,3 +6,4 @@ from . import iso_audit
 from . import audit_checklist_line
 from . import quality_ncr
 from . import quality_capa
+from . import audit_dashboard
