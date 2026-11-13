@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="reingenieria_iso_audit.DashboardTemplate">
+        <div class="o_action_manager o_iso_dashboard p-4 bg-light" style="overflow-y: auto; height: 100%;">
+            <t t-if="state.data">
+                <!-- Encabezado y Filtro Temporal -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="mb-0 fw-bold text-dark">
+                        <i class="fa fa-check-circle text-success me-2"/>Tablero Ejecutivo ISO 9001 &amp; CDO
+                    </h2>
+                    <div class="d-flex gap-2">
+                        <select class="form-select form-select-sm w-auto" t-on-change="onChangePeriod">
+                            <option value="1m" t-att-selected="state.period === '1m'">Último mes</option>
+                            <option value="3m" t-att-selected="state.period === '3m'">Últimos 3 meses</option>
+                            <option value="6m" t-att-selected="state.period === '6m'">Últimos 6 meses</option>
+                            <option value="12m" t-att-selected="state.period === '12m'">Últimos 12 meses</option>
+                            <option value="all" t-att-selected="state.period === 'all'">Histórico Total</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-secondary" t-on-click="onRefresh">
+                            <i class="fa fa-refresh me-1"/>Actualizar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Fila de Tarjetas KPI -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-2">
+                        <div class="card shadow-sm border-0 h-100 cursor-pointer" style="cursor:pointer;"
+                             t-on-click="() => this.openAction('quality.ncr', 'NCRs Abiertas', [['state', '!=', 'closed']])">
+                            <div class="card-body">
+                                <h2 class="fw-bold mb-1 text-dark"><t t-esc="state.data.kpis.open_ncrs"/></h2>
+                                <span class="text-muted small">NCRs Abiertas</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="card shadow-sm border-0 h-100" style="cursor:pointer;"
+                             t-on-click="() => this.openAction('quality.ncr', 'NCRs Críticas', [['state', '!=', 'closed'], ['severity', '=', 'critical']])">
+                            <div class="card-body">
+                                <h2 class="fw-bold mb-1 text-danger"><t t-esc="state.data.kpis.critical_ncrs"/></h2>
+                                <span class="text-muted small">NCRs Críticas Abiertas</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="card shadow-sm border-0 h-100" style="cursor:pointer;"
+                             t-on-click="() => this.openAction('quality.capa', 'CAPAs Pendientes', [['state', '=', 'pending_verification']])">
+                            <div class="card-body">
+                                <h2 class="fw-bold mb-1 text-warning"><t t-esc="state.data.kpis.overdue_capas"/></h2>
+                                <span class="text-muted small">CAPAs Vencidas Verif.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="card shadow-sm border-0 h-100" style="cursor:pointer;"
+                             t-on-click="() => this.openAction('iso.audit', 'Auditorías en Proceso', [['state', '=', 'in_progress']])">
+                            <div class="card-body">
+                                <h2 class="fw-bold mb-1 text-primary"><t t-esc="state.data.kpis.audits_in_progress"/></h2>
+                                <span class="text-muted small">Auditorías en Proceso</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body">
+                                <h2 class="fw-bold mb-1 text-success"><t t-esc="state.data.kpis.ncr_closure_rate"/>%</h2>
+                                <span class="text-muted small">Tasa Cierre NCRs</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body">
+                                <h2 class="fw-bold mb-1 text-info"><t t-esc="state.data.kpis.avg_compliance"/>%</h2>
+                                <span class="text-muted small">Cumplimiento Promedio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Barra de Cobertura y Nivel de Cumplimiento por CDO -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <strong class="me-2">Desempeño Territorial CDOs</strong>
+                                <span class="text-muted small">
+                                    <t t-esc="state.data.cdo_bar.green"/> óptimos (≥80%),
+                                    <t t-esc="state.data.cdo_bar.yellow"/> en observación (60-79%),
+                                    <t t-esc="state.data.cdo_bar.red"/> críticos/sin auditar (&lt;60%)
+                                </span>
+                            </div>
+                            <strong class="fs-5"><t t-esc="state.data.cdo_bar.readiness_pct"/>%</strong>
+                        </div>
+                        <div class="progress" style="height: 12px;">
+                            <div class="progress-bar bg-success" t-attf-style="width: #{state.data.cdo_bar.green_pct}%"/>
+                            <div class="progress-bar bg-warning" t-attf-style="width: #{state.data.cdo_bar.yellow_pct}%"/>
+                            <div class="progress-bar bg-danger" t-attf-style="width: #{state.data.cdo_bar.red_pct}%"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficas Chart.js -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-7">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body">
+                                <h6 class="fw-bold mb-3">Tendencia de No Conformidades (NCR)</h6>
+                                <div style="height: 240px;">
+                                    <canvas t-ref="trendChart"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="card shadow-sm border-0 h-100">
+                            <div class="card-body">
+                                <h6 class="fw-bold mb-3">NCRs Abiertas por Severidad</h6>
+                                <div style="height: 240px;">
+                                    <canvas t-ref="severityChart"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de No Conformidades Recientes -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-3">No Conformidades Recientes</h6>
+                        <table class="table table-hover table-sm align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Folio</th>
+                                    <th>CDO</th>
+                                    <th>Descripción</th>
+                                    <th>Severidad</th>
+                                    <th>Estado</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.data.recent_ncrs" t-as="ncr" t-key="ncr.id">
+                                    <tr style="cursor:pointer;" t-on-click="() => this.openNcrRecord(ncr.id)">
+                                        <td class="fw-bold text-primary"><t t-esc="ncr.name"/></td>
+                                        <td><t t-esc="ncr.cdo"/></td>
+                                        <td><t t-esc="ncr.description"/></td>
+                                        <td>
+                                            <span t-if="ncr.severity === 'minor'" class="badge text-bg-primary">Menor</span>
+                                            <span t-if="ncr.severity === 'major'" class="badge text-bg-warning">Mayor</span>
+                                            <span t-if="ncr.severity === 'critical'" class="badge text-bg-danger">Crítica</span>
+                                        </td>
+                                        <td><t t-esc="ncr.state"/></td>
+                                        <td><t t-esc="ncr.date"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>
